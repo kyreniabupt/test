@@ -71,7 +71,9 @@ if not hasattr(tokenizer, 'pad_token'):
 model = AutoModelForSequenceClassification.from_pretrained(
     model_args.model_name_or_path,
     num_labels=2,
-    problem_type="single_label_classification"
+    problem_type="single_label_classification",
+    #attn_implementation="flash_attention_2",
+    #torch_dtype=torch.float16
 )
 if model_args.use_lora:
     peft_config = LoraConfig(
@@ -96,9 +98,9 @@ if data_args.task_name == 'QI':
     sentence1_str = 'origin_query'
     sentence2_str = 'item_title'
 
-train_dataset = SentencePairDataset(data_args.train_file, tokenizer, data_args.max_seq_length, sentence1_str, sentence2_str)
-eval_dataset = SentencePairDataset(data_args.validation_file, tokenizer, data_args.max_seq_length, sentence1_str, sentence2_str)
-test_dataset = SentencePairPredictDataset(data_args.test_file, tokenizer, data_args.max_seq_length, sentence1_str, sentence2_str)
+train_dataset = SentencePairDataset(data_args.train_file, tokenizer, data_args.max_seq_length)
+eval_dataset = SentencePairDataset(data_args.validation_file, tokenizer, data_args.max_seq_length)
+# test_dataset = SentencePairPredictDataset(data_args.test_file, tokenizer, data_args.max_seq_length)
 data_collator = DataCollatorWithPadding(tokenizer, padding="longest")
 
 
@@ -110,6 +112,8 @@ trainer = Trainer(
     eval_dataset=eval_dataset if training_args.do_eval else None,
     compute_metrics=compute_metrics,
     data_collator = data_collator
+
+    
     # callbacks=[EarlyStoppingCallback(early_stopping_patience=2)]
 )
 

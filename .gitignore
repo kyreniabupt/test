@@ -1,3 +1,6 @@
 README.MD
 data/train_QC.json
 data/train_QI.json
+__pycache__/dataset.cpython-310.pyc
+.gitignore
+__pycache__/parameters.cpython-310.pyc

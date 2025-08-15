@@ -1,7 +1,7 @@
 from torch.utils.data import Dataset
 import torch
 import json
-
+import random
 # Custom Dataset class
 class SentencePairDataset(Dataset):
     def __init__(self, file_path, tokenizer, max_length):
@@ -10,9 +10,9 @@ class SentencePairDataset(Dataset):
         self.data = []
 
         with open(file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                item = json.loads(line.strip())
-                self.data.append(item)
+            data_list = json.load(f)
+            num_samples = 10
+            self.data = random.sample(data_list, num_samples)
 
     def __len__(self):
         return len(self.data)
