@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 import torch
 import json
 import random
-# Custom Dataset class
+# train
 class SentencePairDataset(Dataset):
     def __init__(self, file_path, tokenizer, max_length):
         self.tokenizer = tokenizer
@@ -11,9 +11,8 @@ class SentencePairDataset(Dataset):
 
         with open(file_path, 'r', encoding='utf-8') as f:
             data_list = json.load(f)
-            num_samples = 10
-            self.data = random.sample(data_list, num_samples)
-
+            self.data = data_list
+            #print(len(data_list))
     def __len__(self):
         return len(self.data)
 
@@ -39,5 +38,65 @@ class SentencePairDataset(Dataset):
         }
 
 class SentencePairPredictDataset(SentencePairDataset):
+    def __getitem__(self, idx):
+        return self.data[idx]
+    
+    
+# test
+class SentencePairDataset2(Dataset):
+    def __init__(self, file_path, tokenizer, max_length, sentence1_str, sentence2_str):
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+        self.data = []
+        self.sentence1_str = sentence1_str
+        self.sentence2_str = sentence2_str
+
+        with open(file_path, 'r') as f:
+            for line in f:
+                item = json.loads(line.strip())
+                # 生成 prompt
+                if self.sentence1_str = "category_path":
+                    item['prompt'] = f"""
+                    Determine whether a comma-separated category path matches the user's query intent.
+                    The path represents levels of hierarchy from general to specific.  
+                    If any level is irrelevant or incorrect, return 0.\nOtherwise, return `True`.
+                    Query:   {item[self.sentence1_str]}
+                    Product Categories: {item[self.sentence2_str]}
+                    """
+                elif self.sentence2_str == "item_title":
+                    item['prompt'] = f"""Determine whether a product matches the user's query intent.
+                                    The product must completely satisfy the user's search query in all aspects 
+                                    (including product type, brand, model, attributes, etc.).
+                                    If any aspect is irrelevant or incorrect, return 0. Otherwise, return 1.
+                                    Query: {item[self.sentence1_str]}
+                                    item_title: {item[self.sentence2_str]}"""
+                                    
+                self.data.append(item)
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        item = self.data[idx]
+        sentence1 = item[self.sentence1_str]
+        sentence2 = item[self.sentence2_str]
+        label = item['label']
+
+        encoding = self.tokenizer(
+            sentence1,
+            sentence2,
+            max_length=self.max_length,
+            padding=False,
+            truncation=True,
+            return_tensors='pt'
+        )
+
+        return {
+            'input_ids': encoding['input_ids'].flatten(),
+            'attention_mask': encoding['attention_mask'].flatten(),
+            'label': torch.tensor(int(label), dtype=torch.long)
+        }
+
+class SentencePairPredictDataset2(SentencePairDataset2):
     def __getitem__(self, idx):
         return self.data[idx]

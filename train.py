@@ -21,7 +21,7 @@ from peft import (
 import torch
 from torch.utils.data import DataLoader
 
-from dataset import SentencePairDataset, SentencePairPredictDataset
+from dataset import SentencePairDataset, SentencePairPredictDataset,SentencePairDataset2,SentencePairPredictDataset2
 from parameters import load_parameters
 
 os.environ['WANDB_MODE'] = 'offline'
@@ -100,7 +100,7 @@ if data_args.task_name == 'QI':
 
 train_dataset = SentencePairDataset(data_args.train_file, tokenizer, data_args.max_seq_length)
 eval_dataset = SentencePairDataset(data_args.validation_file, tokenizer, data_args.max_seq_length)
-# test_dataset = SentencePairPredictDataset(data_args.test_file, tokenizer, data_args.max_seq_length)
+test_dataset = SentencePairPredictDataset2(data_args.test_file, tokenizer, data_args.max_seq_length, sentence1_str, sentence2_str)
 data_collator = DataCollatorWithPadding(tokenizer, padding="longest")
 
 
@@ -144,16 +144,21 @@ if training_args.do_eval:
     trainer.save_metrics("eval", metrics)
     print(f"Final F1 score on test set: {metrics['eval_f1']:.4f}")
 
-
+def collate_fn(batch):
+    
+    return batch
 # Predict
 if training_args.do_predict:
-    dataloader = DataLoader(test_dataset, batch_size=training_args.per_device_eval_batch_size, shuffle=False)
-
+    
+    dataloader = DataLoader(test_dataset, batch_size=training_args.per_device_eval_batch_size, shuffle=False,collate_fn=collate_fn)
+    output_path = data_args.outputs  
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(data_args.outputs, 'w', encoding='utf-8') as f:
         for i, batch in enumerate(tqdm(dataloader)):
+            prompts = [item['prompt'] for item in batch]
             # Tokenize inputs
             inputs = tokenizer(
-                batch[sentence1_str], batch[sentence2_str],
+                prompts,
                 padding=True,
                 truncation=True,
                 return_tensors="pt",
@@ -168,16 +173,14 @@ if training_args.do_predict:
             prediction = torch.argmax(outputs.logits, dim=1).tolist()
 
             # Create output JSON
-            for k in range(len(batch['id'])):
+            for k, item in enumerate(batch):
                 output_json = {
-                    "id": batch["id"][k].item(),
-                    "language": batch["language"][k],
-                    sentence1_str: batch[sentence1_str][k],
-                    sentence2_str: batch[sentence2_str][k],
+                    "id": item["id"], 
+                    "language": item["language"],
+                    sentence1_str: item[sentence1_str],
+                    sentence2_str: item[sentence2_str],
                     "prediction": prediction[k]
                 }
-
-                # Write to file
                 f.write(json.dumps(output_json, ensure_ascii=False) + "\n")
 
     print(f"Predictions saved to {data_args.outputs}")
