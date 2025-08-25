@@ -54,17 +54,17 @@ class SentencePairDataset2(Dataset):
         with open(file_path, 'r') as f:
             for line in f:
                 item = json.loads(line.strip())
-                # 生成 prompt
-                if self.sentence1_str = "category_path":
+                
+                if self.sentence2_str == "category_path":
                     item['prompt'] = f"""
                     Determine whether a comma-separated category path matches the user's query intent.
                     The path represents levels of hierarchy from general to specific.  
-                    If any level is irrelevant or incorrect, return 0.\nOtherwise, return `True`.
+                    If any level is irrelevant or incorrect, return 0.Otherwise, return 1  .
                     Query:   {item[self.sentence1_str]}
                     Product Categories: {item[self.sentence2_str]}
                     """
                 elif self.sentence2_str == "item_title":
-                    item['prompt'] = f"""Determine whether a product matches the user's query intent.
+                    item['prompt'] = f"""Determine whether a product name matches the user's query intent.
                                     The product must completely satisfy the user's search query in all aspects 
                                     (including product type, brand, model, attributes, etc.).
                                     If any aspect is irrelevant or incorrect, return 0. Otherwise, return 1.

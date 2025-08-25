@@ -63,7 +63,8 @@ else:
 print("use fast tokenizer = {}".format(model_args.use_fast_tokenizer))
 tokenizer = AutoTokenizer.from_pretrained(
     config_peft.base_model_name_or_path if isinstance(config_peft, PeftConfig) else model_args.model_name_or_path,
-    use_fast=model_args.use_fast_tokenizer
+    use_fast=model_args.use_fast_tokenizer,
+    add_eos_token=True
 )
 if not hasattr(tokenizer, 'pad_token'):
     tokenizer.pad_token = tokenizer.eos_token  # Set pad token
