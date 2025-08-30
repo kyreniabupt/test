@@ -4,3 +4,7 @@ data/train_QI.json
 __pycache__/dataset.cpython-310.pyc
 .gitignore
 __pycache__/parameters.cpython-310.pyc
+mymodel/Qwen3-0.6B
+mymodel/Qwen3-Reranker-0.6B
+mymodel/Qwen3-Embedding-0.6B
+

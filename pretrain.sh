@@ -1,1 +1,0 @@
-python train.py /root/test/config/pretrain_QI/pretrain_QI_emb.json

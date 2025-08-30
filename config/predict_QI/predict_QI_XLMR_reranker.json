@@ -1,6 +1,6 @@
 {
   "task_name": "QI",
-  "model_name_or_path": "/root/autodl-tmp/models/baseline_QI_XLMR_reranker",
+  "model_name_or_path": "/root/autodl-tmp/models/train_pretrain_reranker",
   "output_dir": "/root/autodl-tmp/models/baseline_QI_XLMR_reranker",
   "outputs": "/root/autodl-tmp/predictions/qwen3-reranker/submit_QI_XLMR_reranker.txt",
   "max_seq_length": 128,

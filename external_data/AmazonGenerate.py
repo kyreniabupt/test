@@ -162,7 +162,7 @@ class ESCIDataProcessor:
             match_status = esci_mapping.get(row['esci_label'], False)
             
             formatted_item = {
-                "instruction": "Determine whether a product matches the user's query intent.\nThe product must completely satisfy the user's search query in all aspects (including product type, brand, model, attributes, etc.).\nIf any aspect is irrelevant or incorrect, return 0.\nOtherwise, return 1.\n\nPlease reason and then give your response.\n\nQuery: {}\nProduct: {}".format(
+                "instruction": "Determine whether a product matches the user's query intent.\nThe product must completely satisfy the user's search query in all aspects (including product type, brand, model, attributes, etc.).\nIf any aspect is irrelevant or incorrect, return `False`.\nOtherwise, return `True`.\n\nPlease reason and then give your response.\n\nQuery: {}\nProduct: {}".format(
                     row['query'], 
                     product_info
                 ),
@@ -193,7 +193,7 @@ class ESCIDataProcessor:
         for locale, count in locale_counts.items():
             print(f"  {locale}: {count}")
     
-    def save_training_data(self, formatted_data: List[Dict], filename: str = "/root/autodl-tmp/external_data/esci_training_data.json"):
+    def save_training_data(self, formatted_data: List[Dict], filename: str = "/root/autodl-tmp/external_data/esci_training_data2.json"):
         """保存训练数据到文件"""
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(formatted_data, f, ensure_ascii=False, indent=2)
