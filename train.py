@@ -146,7 +146,6 @@ if training_args.do_eval:
     print(f"Final F1 score on test set: {metrics['eval_f1']:.4f}")
 
 def collate_fn(batch):
-    
     return batch
 # Predict
 if training_args.do_predict:
@@ -171,6 +170,7 @@ if training_args.do_predict:
                 outputs = model(**inputs)
 
             # Get prediction (0 or 1)
+            # outputs [batch_size, num_classes]
             prediction = torch.argmax(outputs.logits, dim=1).tolist()
 
             # Create output JSON

@@ -64,12 +64,13 @@ class SentencePairDataset2(Dataset):
                     Product Categories: {item[self.sentence2_str]}
                     """
                 elif self.sentence2_str == "item_title":
-                    item['prompt'] = f"""Determine whether a product name matches the user's query intent.
-                                    The product must completely satisfy the user's search query in all aspects 
-                                    (including product type, brand, model, attributes, etc.).
-                                    If any aspect is irrelevant or incorrect, return 0. Otherwise, return 1.
-                                    Query: {item[self.sentence1_str]}
-                                    item_title: {item[self.sentence2_str]}"""
+                    item['prompt'] = f"""
+                    Determine whether a product name matches the user's query intent.
+                    The product must completely satisfy the user's search query in all aspects 
+                    (including product type, brand, model, attributes, etc.).
+                    If any aspect is irrelevant or incorrect, return 0. Otherwise, return 1.
+                    Query: {item[self.sentence1_str]}
+                    item_title: {item[self.sentence2_str]}"""
                                     
                 self.data.append(item)
 
@@ -78,13 +79,11 @@ class SentencePairDataset2(Dataset):
 
     def __getitem__(self, idx):
         item = self.data[idx]
-        sentence1 = item[self.sentence1_str]
-        sentence2 = item[self.sentence2_str]
+        prompt = item['prompt']
         label = item['label']
 
         encoding = self.tokenizer(
-            sentence1,
-            sentence2,
+            prompt,
             max_length=self.max_length,
             padding=False,
             truncation=True,
