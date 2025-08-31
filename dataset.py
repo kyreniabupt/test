@@ -70,7 +70,7 @@ class SentencePairDataset2(Dataset):
                     (including product type, brand, model, attributes, etc.).
                     If any aspect is irrelevant or incorrect, return 0. Otherwise, return 1.
                     Query: {item[self.sentence1_str]}
-                    item_title: {item[self.sentence2_str]}"""
+                    Product Name: {item[self.sentence2_str]}"""
                                     
                 self.data.append(item)
 
